@@ -6,7 +6,7 @@
 	Plugin Name: Ajaxy Live Search
 	Plugin URI: http://ajaxy.org
 	Description: Transfer wordpress form into an advanced ajax search form the same as facebook live search, This version supports themes and can work with almost all themes without any modifications
-	Version: 3.0.8
+	Version: 3.0.9
 	Author: Ajaxy Team
 	Author URI: http://www.ajaxy.org
 	License: GPLv2 or later
@@ -14,21 +14,21 @@
 
 
 
-define('AJAXY_SF_VERSION', '3.0.7');
+define('AJAXY_SF_VERSION', '3.0.9');
 define('AJAXY_SF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define('AJAXY_THEMES_DIR', dirname(__FILE__)."/themes/");
 define('AJAXY_SF_NO_IMAGE', plugin_dir_url( __FILE__ ) ."themes/default/images/no-image.gif");
 
 require_once('admin/widgets/search.php');
-	
+
 class AjaxyLiveSearch {
 
 
 	public static $woocommerce_taxonomies = array('product_cat', 'product_tag', 'product_shipping_class');
 	public static $woocommerce_post_types = array('product', 'shop_order', 'shop_coupon');
-	
+
 	private $noimage = '';
-	
+
 	function __construct(){
 		$this->actions();
 		$this->filters();
@@ -41,18 +41,18 @@ class AjaxyLiveSearch {
 		}
 		add_action( 'wp_enqueue_scripts', array(&$this, "enqueue_scripts"));
 		add_action( 'admin_enqueue_scripts', array(&$this, "enqueue_scripts"));
-		
+
 		add_action( "admin_menu",array(&$this, "menu_pages"));
 		add_action( 'wp_head', array(&$this, 'head'));
 		add_action( 'admin_head', array(&$this, 'head'));
 		add_action( 'wp_footer', array(&$this, 'footer'));
 		add_action( 'admin_footer', array(&$this, 'footer'));
-		
+
 		add_action( 'wp_ajax_ajaxy_sf', array(&$this, 'get_search_results'));
 		add_action( 'wp_ajax_nopriv_ajaxy_sf', array(&$this, 'get_search_results'));
-		
+
 		add_action( 'wp_ajax_ajaxy_sf_shortcode', array(&$this, 'get_shortcode'));
-		
+
 		add_action( 'admin_notices', array(&$this, 'admin_notice') );
 		add_action( 'plugins_loaded', array(&$this, 'load_textdomain') );
 	}
@@ -72,9 +72,9 @@ class AjaxyLiveSearch {
 	function overview(){
 		echo apply_filters('ajaxy-overview', 'main');
 	}
-	
+
 	function load_textdomain() {
-		load_plugin_textdomain( 'ajaxy-sf', false, dirname( plugin_basename( __FILE__ ) ) . '/langs/' ); 
+		load_plugin_textdomain( 'ajaxy-sf', false, dirname( plugin_basename( __FILE__ ) ) . '/langs/' );
 	}
 
 	function menu_page_exists( $menu_slug ) {
@@ -86,12 +86,12 @@ class AjaxyLiveSearch {
 		}
 		return false;
 	}
-	
+
 	function menu_pages(){
 		if(!$this->menu_page_exists('ajaxy-page')){
 			add_menu_page( _n( 'Ajaxy', 'Ajaxy', 1, 'ajaxy' ), _n( 'Ajaxy', 'Ajaxy', 1 ), 'Ajaxy', 'ajaxy-page', array(&$this, 'overview'), AJAXY_SF_PLUGIN_URL.'/images/ico.png');
 		}
-		add_submenu_page( 'ajaxy-page', __('Live Search'), __('Live Search'), 'manage_options', 'ajaxy_sf_admin', array(&$this, 'admin_page')); 
+		add_submenu_page( 'ajaxy-page', __('Live Search'), __('Live Search'), 'manage_options', 'ajaxy_sf_admin', array(&$this, 'admin_page'));
 	}
 	function admin_page(){
 		$message = false;
@@ -108,18 +108,18 @@ class AjaxyLiveSearch {
 				include_once('admin/admin-edit-post-form.php');
 				return true;
 			}
-			
+
 		}
 		$tab = (!empty($_GET['tab']) ? trim($_GET['tab']) : false);
 		$type = (!empty($_GET['type']) ? trim($_GET['type']) : false);
-		
+
 		//form data
 		switch($tab) {
 			case 'woocommerce':
 			case 'taxonomy':
 			case 'author':
 			case 'post_type':
-			case 'templates':	
+			case 'templates':
 				$public = ($tab == 'author' ? false : true);
 				if(isset($_POST['action'])){
 					$action = trim($_POST['action']);
@@ -169,7 +169,7 @@ class AjaxyLiveSearch {
 				}
 				break;
 			default:
-				
+
 		}
 
 		?>
@@ -191,7 +191,7 @@ class AjaxyLiveSearch {
 
 				<li class="active ajaxy-sf-new"><a href="<?php echo menu_page_url('ajaxy_sf_admin', false).'&tab=woocommerce'; ?>" class="<?php echo ($tab == 'woocommerce' ? 'current' : ''); ?>"><?php _e('WooCommerce'); ?><span class="count-new">New *</span></a> |</li>
 				<!--<li class="active ajaxy-sf-new pro"><a href="<?php echo menu_page_url('ajaxy_sf_admin', false).'&tab=selective'; ?>" class="<?php echo ($tab == 'selective' ? 'current' : ''); ?>"><?php _e('Selective Search'); ?><span class="count-new">New *</span></a> |</li>-->
-				
+
 				<li class="active"><a href="<?php echo menu_page_url('ajaxy_sf_admin', false).'&tab=themes'; ?>" class="<?php echo ($tab == 'themes' ? 'current' : ''); ?>"><?php _e('Themes'); ?><span class="count"></span></a> |</li>
 				<li class="active"><a href="<?php echo menu_page_url('ajaxy_sf_admin', false).'&tab=shortcode'; ?>" class="<?php echo ($tab == 'shortcode' ? 'current' : ''); ?>"><?php _e('Shortcodes'); ?><span class="count"></span></a> |</li>
 				<li class="active"><a href="<?php echo menu_page_url('ajaxy_sf_admin', false).'&tab=preview'; ?>" class="<?php echo ($tab == 'preview' ? 'current' : ''); ?>"><?php _e('Preview'); ?><span class="count"></span></a></li>
@@ -215,8 +215,8 @@ class AjaxyLiveSearch {
 			<form id="ajaxy-form" action="" method="post">
 			<?php wp_nonce_field(); ?>
 			<?php if($tab == 'post_type'): ?>
-				<?php 
-					$list_table = new WP_SF_List_Table($this->get_search_objects(true, 'post_type')); 
+				<?php
+					$list_table = new WP_SF_List_Table($this->get_search_objects(true, 'post_type'));
 				?>
 				<div>
 					<?php if ( $message ) : ?>
@@ -225,8 +225,8 @@ class AjaxyLiveSearch {
 					<?php $list_table->display(); ?>
 				</div>
 			<?php elseif($tab == 'taxonomy'): ?>
-				<?php 
-					$list_table = new WP_SF_List_Table($this->get_search_objects(true, 'taxonomy')); 
+				<?php
+					$list_table = new WP_SF_List_Table($this->get_search_objects(true, 'taxonomy'));
 				?>
 				<div>
 					<?php if ( $message ) : ?>
@@ -235,8 +235,8 @@ class AjaxyLiveSearch {
 					<?php $list_table->display(); ?>
 				</div>
 			<?php elseif($tab == 'author'): ?>
-				<?php 
-					$list_table = new WP_SF_List_Table($this->get_search_objects(true, 'author'), false, 'role_'); 
+				<?php
+					$list_table = new WP_SF_List_Table($this->get_search_objects(true, 'author'), false, 'role_');
 				?>
 				<div>
 					<?php if ( $message ) : ?>
@@ -245,8 +245,8 @@ class AjaxyLiveSearch {
 					<?php $list_table->display(); ?>
 				</div>
 			<?php elseif($tab == 'themes'): ?>
-				<?php 
-					$list_table = new WP_SF_THEMES_List_Table(); 
+				<?php
+					$list_table = new WP_SF_THEMES_List_Table();
 				?>
 				<div>
 					<?php if ( $message ) : ?>
@@ -264,7 +264,7 @@ class AjaxyLiveSearch {
 				<p class="description"><?php _e('Use the form above to preview theme changes and settings, please note that the changes could vary from one theme to another, please contact the author of this plugin for more help'); ?></p>
 				<hr style="margin:10px 0"/>
 			<?php elseif($tab == 'selective'): ?>
-			<?php elseif($tab == 'woocommerce'): 
+			<?php elseif($tab == 'woocommerce'):
 				$list_table = new WP_SF_List_Table($this->get_search_objects(true, 'taxonomy', array(), self::$woocommerce_taxonomies));
 			?>
 				<h3><?php _e('WooCommerce Taxonomies'); ?></h3>
@@ -284,7 +284,7 @@ class AjaxyLiveSearch {
 					<?php endif; ?>
 					<?php $list_table->display(); ?>
 				</div>
-			<?php elseif($tab == 'author'): 
+			<?php elseif($tab == 'author'):
 				$list_table = new WP_SF_List_Table($this->get_search_objects(false, 'author'), true, 'role_');
 			?>
 				<h3><?php _e('WooCommerce Taxonomies'); ?></h3>
@@ -304,17 +304,17 @@ class AjaxyLiveSearch {
 					<?php endif; ?>
 					<?php $list_table->display(); ?>
 				</div>
-			<?php elseif($tab == 'shortcode'): 
+			<?php elseif($tab == 'shortcode'):
 				include_once('admin/admin-shortcodes.php');
 			else:
 				include_once('admin/admin-settings.php');
 			 endif; ?>
 			 </form>
-			 
+
 		</div>
 		<?php
 	}
-	
+
 	function get_image_from_content($content, $width_max, $height_max){
 		//return false;
 		$theImageSrc = false;
@@ -335,21 +335,21 @@ class AjaxyLiveSearch {
 				list($width, $height, $type, $attr) = @getimagesize( $theImageSrc );
 				if($width > 0 && $height > 0){
 					if($width < $width_max && $height < $height_max){
-						return array('src' => $theImageSrc, 'width' => $width, 'height' => $height);	
+						return array('src' => $theImageSrc, 'width' => $width, 'height' => $height);
 					}
 					elseif($width > $width_max && $height > $height_max){
 						$percent_width = $width_max * 100/$width;
 						$percent_height = $height_max * 100/$height;
 						$percent = ($percent_height < $percent_width ? $percent_height : $percent_width);
-						return array('src' => $theImageSrc, 'width' => intval($width * $percent / 100), 'height' => intval($height * $percent / 100));	
+						return array('src' => $theImageSrc, 'width' => intval($width * $percent / 100), 'height' => intval($height * $percent / 100));
 					}
 					elseif($width < $width_max && $height > $height_max){
 						$percent = $height * 100/$height_max;
-						return array('src' => $theImageSrc, 'width' => intval($width * $percent / 100), 'height' => intval($height * $percent / 100));		
+						return array('src' => $theImageSrc, 'width' => intval($width * $percent / 100), 'height' => intval($height * $percent / 100));
 					}
 					else{
 						$percent = $width * 100/$width_max;
-						return array('src' => $theImageSrc, 'width' => intval($width * $percent / 100), 'height' => intval($height * $percent / 100));	
+						return array('src' => $theImageSrc, 'width' => intval($width * $percent / 100), 'height' => intval($height * $percent / 100));
 					}
 				}
 			}
@@ -359,7 +359,7 @@ class AjaxyLiveSearch {
 			}
 		}
 		else{
-			return array('src' => $theImageSrc, 'width' => $this->get_style_setting('thumb_width', 50 ) , 'height' => $this->get_style_setting('thumb_height', 50 ) );	
+			return array('src' => $theImageSrc, 'width' => $this->get_style_setting('thumb_width', 50 ) , 'height' => $this->get_style_setting('thumb_height', 50 ) );
 		}
 		return false;
 	}
@@ -379,10 +379,10 @@ class AjaxyLiveSearch {
 		$args = array(
 			'public'   => true,
 			'_builtin' => false
-		); 
+		);
 		$output = 'objects'; // or objects
 		$operator = 'or'; // 'and' or 'or'
-		$taxonomies = get_taxonomies( $args, $output, $operator ); 
+		$taxonomies = get_taxonomies( $args, $output, $operator );
 		if ( $taxonomies ) {
 			return $taxonomies;
 		}
@@ -393,24 +393,24 @@ class AjaxyLiveSearch {
 		$search = array();
 		$scat = (array)$this->get_setting('category');
 		$arg_category_show = isset($_POST['show_category']) ? $_POST['show_category'] : 1;
-		
+
 		$search_taxonomies = false;
-		
+
 		if($scat['show'] == 1 && $arg_category_show == 1){
 			$search_taxonomies = true;
 		}
 		$arg_post_category_show = isset($_POST['show_post_category']) ? $_POST['show_post_category'] : 1;
-		
+
 		$show_post_category = false;
-		
+
 		if($scat['ushow'] == 1 && $arg_post_category_show == 1){
 			$show_post_category = true;
 		}
-		
+
 		$arg_authors_show = isset($_POST['show_authors']) ? $_POST['show_authors'] : 1;
-		
+
 		$show_authors = false;
-		
+
 		if($show_authors == 1){
 			$show_authors = true;
 		}
@@ -418,14 +418,14 @@ class AjaxyLiveSearch {
 			// get all post types that are ready for search
 			$post_types = $this->get_post_types();
 			foreach($post_types as $post_type)
-			{		
-				if(sizeof($specific_post_types) == 0) {	
+			{
+				if(sizeof($specific_post_types) == 0) {
 					$setting = $this->get_setting($post_type->name);
 					if($setting -> show == 1 || $all){
 						$search[] = array(
-							'order' => $setting->order, 
-							'name' => $post_type->name, 
-							'label' => 	(empty($setting->title) ? $post_type->label : $setting->title), 
+							'order' => $setting->order,
+							'name' => $post_type->name,
+							'label' => 	(empty($setting->title) ? $post_type->label : $setting->title),
 							'type' => 	'post_type'
 						);
 					}
@@ -433,9 +433,9 @@ class AjaxyLiveSearch {
 				elseif(in_array($post_type->name, $specific_post_types)) {
 					$setting = $this->get_setting($post_type->name);
 					$search[] = array(
-							'order' => $setting->order, 
-							'name' => $post_type->name, 
-							'label' => 	(empty($setting->title) ? $post_type->label : $setting->title), 
+							'order' => $setting->order,
+							'name' => $post_type->name,
+							'label' => 	(empty($setting->title) ? $post_type->label : $setting->title),
 							'type' => 	'post_type'
 					);
 				}
@@ -446,14 +446,14 @@ class AjaxyLiveSearch {
 
 			$taxonomies = $this->get_taxonomies();
 			foreach($taxonomies as $taxonomy)
-			{		
-				if(sizeof($specific_taxonomies) == 0) {	
+			{
+				if(sizeof($specific_taxonomies) == 0) {
 					$setting = $this->get_setting($taxonomy->name);
 					if($setting -> show == 1 || $all){
 						$search[] = array(
-							'order' => $setting->order, 
-							'name' => $taxonomy->name, 
-							'label' => 	(empty($setting->title) ? $taxonomy->label : $setting->title), 
+							'order' => $setting->order,
+							'name' => $taxonomy->name,
+							'label' => 	(empty($setting->title) ? $taxonomy->label : $setting->title),
 							'type' => 	'taxonomy',
 							'show_posts' => $show_post_category
 						);
@@ -462,9 +462,9 @@ class AjaxyLiveSearch {
 				elseif(in_array($taxonomy->name, $specific_taxonomies)) {
 					$setting = $this->get_setting($taxonomy->name);
 					$search[] = array(
-							'order' => $setting->order, 
-							'name' => $taxonomy->name, 
-							'label' => 	(empty($setting->title) ? $taxonomy->label : $setting->title), 
+							'order' => $setting->order,
+							'name' => $taxonomy->name,
+							'label' => 	(empty($setting->title) ? $taxonomy->label : $setting->title),
 							'type' => 	'taxonomy',
 							'show_posts' => $show_post_category
 						);
@@ -475,14 +475,14 @@ class AjaxyLiveSearch {
 
 			$taxonomies = $this->get_taxonomies();
 			foreach($taxonomies as $taxonomy)
-			{		
-				if(sizeof($specific_taxonomies) == 0) {	
+			{
+				if(sizeof($specific_taxonomies) == 0) {
 					$setting = $this->get_setting($taxonomy->name);
 					if($setting -> show == 1 || $all){
 						$search[] = array(
-							'order' => $setting->order, 
-							'name' => $taxonomy->name, 
-							'label' => 	(empty($setting->title) ? $taxonomy->label : $setting->title), 
+							'order' => $setting->order,
+							'name' => $taxonomy->name,
+							'label' => 	(empty($setting->title) ? $taxonomy->label : $setting->title),
 							'type' => 	'taxonomy',
 							'show_posts' => $show_post_category
 						);
@@ -491,9 +491,9 @@ class AjaxyLiveSearch {
 				elseif(in_array($taxonomy->name, $specific_taxonomies)) {
 					$setting = $this->get_setting($taxonomy->name);
 					$search[] = array(
-							'order' => $setting->order, 
-							'name' => $taxonomy->name, 
-							'label' => 	(empty($setting->title) ? $taxonomy->label : $setting->title), 
+							'order' => $setting->order,
+							'name' => $taxonomy->name,
+							'label' => 	(empty($setting->title) ? $taxonomy->label : $setting->title),
 							'type' => 	'taxonomy',
 							'show_posts' => $show_post_category
 						);
@@ -504,16 +504,16 @@ class AjaxyLiveSearch {
 
 			global $wp_roles;
 			$roles = $wp_roles->get_names();
-			
+
 			foreach($roles as $role => $label)
-			{		
-				if(sizeof($specific_roles) == 0) {	
+			{
+				if(sizeof($specific_roles) == 0) {
 					$setting = $this->get_setting('role_'.$role, false);
 					if($setting -> show == 1 || $all){
 						$search[] = array(
-							'order' => $setting->order, 
-							'name' => $role, 
-							'label' => 	(empty($setting->title) ? $label : $setting->title), 
+							'order' => $setting->order,
+							'name' => $role,
+							'label' => 	(empty($setting->title) ? $label : $setting->title),
 							'type' => 	'role'
 						);
 					}
@@ -521,9 +521,9 @@ class AjaxyLiveSearch {
 				elseif(in_array($role, $specific_roles)) {
 					$setting = $this->get_setting('role_'.$role, false);
 					$search[] = array(
-						'order' => $setting->order, 
-						'name' => $role, 
-						'label' => 	(empty($setting->title) ? $label : $setting->title), 
+						'order' => $setting->order,
+						'name' => $role,
+						'label' => 	(empty($setting->title) ? $label : $setting->title),
 						'type' => 	'role'
 					);
 				}
@@ -567,7 +567,7 @@ class AjaxyLiveSearch {
 	function get_setting($name, $public = true)
 	{
 		$defaults = array(
-						'title' => '', 
+						'title' => '',
 						'show' => 1,
 						'ushow' => 0,
 						'search_content' => 0,
@@ -670,22 +670,22 @@ class AjaxyLiveSearch {
 			$excludes_array = $setting->excludes;
 		}
 		$results = null;
-		
+
 		$query = "
-			SELECT 
+			SELECT
 				distinct($wpdb->terms.name)
 				, $wpdb->terms.term_id
-				, $wpdb->term_taxonomy.taxonomy 
-			FROM 
+				, $wpdb->term_taxonomy.taxonomy
+			FROM
 				$wpdb->terms
-				, $wpdb->term_taxonomy 
-			WHERE 
-				name LIKE '%%%s%%' 
-				AND $wpdb->term_taxonomy.taxonomy = '$taxonomy' 
-				AND $wpdb->term_taxonomy.term_id = $wpdb->terms.term_id 
-			$excludes 
+				, $wpdb->term_taxonomy
+			WHERE
+				name LIKE '%%%s%%'
+				AND $wpdb->term_taxonomy.taxonomy = '$taxonomy'
+				AND $wpdb->term_taxonomy.term_id = $wpdb->terms.term_id
+			$excludes
 			LIMIT 0, %d";
-			
+
 		$query = apply_filters("sf_category_query", $wpdb->prepare($query,  $name, $setting->limit), $name, $excludes_array, $setting->limit);
 
 		$results = $wpdb->get_results($query);
@@ -697,15 +697,15 @@ class AjaxyLiveSearch {
 			{
 				$cat = get_term($result->term_id, $result->taxonomy);
 				if($cat != null && !is_wp_error($cat))
-				{	
+				{
 					$cat_object = new stdclass();
 					$category_link = get_term_link($cat);
 					$cat_object->category_link = $category_link;
-					
+
 					$matches = array();
 					$template = $this->get_templates( $taxonomy, 'taxonomy' );
 					preg_match_all ("/\{.*?\}/", $template, $matches);
-					
+
 					foreach($matches[0] as $match){
 						$match = str_replace(array('{', '}'), '', $match);
 						if(isset($cat->{$match})) {
@@ -716,46 +716,46 @@ class AjaxyLiveSearch {
 						$limit = isset($setting->limit_posts) ? $setting->limit_posts : 5;
 						$psts = $this->posts_by_term($cat->term_id, $taxonomy, $limit);
 						if(sizeof($psts) > 0) {
-							$categories[$cat->term_id] = array('name' => $cat->name,'posts' => $this->posts_by_term($cat->term_id, $limit)); 
+							$categories[$cat->term_id] = array('name' => $cat->name,'posts' => $this->posts_by_term($cat->term_id, $limit));
 						}
 					}
 					else {
-						$categories[] = $cat_object; 
+						$categories[] = $cat_object;
 					}
 				}
 			}
 		}
 		return $categories;
-	}	
+	}
 	function author($name, $show_author_posts = false, $limit = 5)
 	{
 		global $wpdb;
 
 		$authors = array();
-	
+
 		$results = null;
-		
+
 		$query = "
-			SELECT 
+			SELECT
 				*
-			FROM 
+			FROM
 				$wpdb->users
-			WHERE 
+			WHERE
 				ID IN (
-					SELECT 	
-						user_id 
-					FROM 
-						$wpdb->usermeta 
-					WHERE 
+					SELECT
+						user_id
+					FROM
+						$wpdb->usermeta
+					WHERE
 						(meta_key = 'first_name' AND meta_value LIKE '%%%s%%')
 						OR (meta_key = 'last_name' AND meta_value LIKE '%%%s%%' )
 						OR (meta_key = 'nickname' AND meta_value LIKE '%%%s%%' )
 				)
-		";	
+		";
 		$query = apply_filters("sf_authors_query", $wpdb->prepare($query,  $name,  $name,  $name), $name);
 
 		$results = $wpdb->get_results($query);
-		
+
 		if(sizeof($results) > 0 && is_array($results) && !is_wp_error($results))
 		{
 			foreach($results as $result)
@@ -778,7 +778,7 @@ class AjaxyLiveSearch {
 		$matches = array();
 		preg_match_all ("/\{.*?\}/", $template, $matches);
 		if(sizeof($matches) > 0) {
-			
+
 			foreach($authors as $author) {
 				if(in_array($role, $author->roles) && !in_array($author->ID,$excludes_array)) {
 					$user = new stdClass();
@@ -813,31 +813,31 @@ class AjaxyLiveSearch {
 			$excludes = " AND ID NOT IN (".implode(',', $setting->excludes).")";
 			$excludes_array = $setting->excludes;
 		}
-		
+
 		$order_results = ($setting->order_results ? " ORDER BY ".$setting->order_results : "");
 		$results = array();
-		
+
 		$query = "
-			SELECT 
-				$wpdb->posts.ID 
-			FROM 
+			SELECT
+				$wpdb->posts.ID
+			FROM
 				$wpdb->posts
-			WHERE 
-				(post_title LIKE '%%%s%%' ".($setting->search_content == 1 ? "or post_content LIKE '%%%s%%')":")")." 
-				AND post_status='publish' 
-				AND post_type='".$post_type."' 
-				$excludes 
-				$order_results 
+			WHERE
+				(post_title LIKE '%%%s%%' ".($setting->search_content == 1 ? "or post_content LIKE '%%%s%%')":")")."
+				AND post_status='publish'
+				AND post_type='".$post_type."'
+				$excludes
+				$order_results
 			LIMIT 0, %d";
 		/*
 		$meta_query = "
-			SELECT 
+			SELECT
 				project_id.post_id
 				, height.height
 				, width.width
-			FROM 
+			FROM
 				$wpdb->postmeta
-			WHERE 
+			WHERE
 				meta_key = '$meta_key'
 				AND meta_value LIKE '$meta_value'
 			";
@@ -845,8 +845,8 @@ class AjaxyLiveSearch {
 		$query = apply_filters("sf_posts_query", ($setting->search_content == 1 ? $wpdb->prepare($query, $name, $name, $setting->limit) :$wpdb->prepare($query, $name, $setting->limit)), $name, $post_type, $excludes_array, $setting->search_content, $order_results, $setting->limit);
 
 		$results = $wpdb->get_results( $query );
-		
-		
+
+
 		if(sizeof($results) > 0 && is_array($results) && !is_wp_error($results))
 		{
 			$template = $this->get_templates( $post_type, 'post_type' );
@@ -857,7 +857,7 @@ class AjaxyLiveSearch {
 				{
 					$pst = $this->post_object($result->ID, $term_id, $matches[0]);
 					if($pst){
-						$posts[] = $pst; 
+						$posts[] = $pst;
 					}
 				}
 			}
@@ -866,7 +866,7 @@ class AjaxyLiveSearch {
 	}
 	function posts_by_term($term_id, $taxonomy, $limit = 5){
 		$posts = array();
-		$args = array( 
+		$args = array(
 				'showposts' => $limit,
 				'tax_query' => array(
 					array(
@@ -876,7 +876,7 @@ class AjaxyLiveSearch {
 					)
 				),
 				'orderby' => 'date',
-				'order' => 'DESC' 
+				'order' => 'DESC'
 			);
 		$term_query = new WP_Query( $args );
 		if($term_query->have_posts()) :
@@ -898,7 +898,7 @@ class AjaxyLiveSearch {
 		global $post;
 		$date_format = get_option( 'date_format' );
 		$post = get_post($id);
-		if($term_id) {	
+		if($term_id) {
 			if(!in_category($term_id, $post->ID)){
 				return false;
 			}
@@ -940,7 +940,7 @@ class AjaxyLiveSearch {
 					if(in_array('{wpsc_price}', $matches)){
 						$post_object->wpsc_price = wpsc_the_product_price();
 					}if(in_array('{wpsc_shipping}', $matches)){
-						$post_object->wpsc_shipping = strip_tags(wpsc_product_postage_and_packaging());	
+						$post_object->wpsc_shipping = strip_tags(wpsc_product_postage_and_packaging());
 					}if(in_array('{wpsc_image}', $matches)){
 						$post_object->wpsc_image = wpsc_the_product_image($size['height'], $size['width']);
 					}
@@ -1001,7 +1001,7 @@ class AjaxyLiveSearch {
 			}
 			$post_object->ID = $post->ID;
 			$post_object->post_title = get_the_title($post->ID);
-			
+
 			if(in_array('{post_excerpt}', $matches)) {
 				$post_object->post_excerpt = $post->post_excerpt;
 			}if(in_array('{post_author}', $matches)) {
@@ -1014,8 +1014,8 @@ class AjaxyLiveSearch {
 				$post_object->post_date_formatted = date($date_format,  strtotime( $post->post_date) );
 			}
 
-			
-			
+
+
 			foreach($matches as $match) {
 				$match = str_replace(array('{', '}'), '', $match);
 
@@ -1087,15 +1087,15 @@ class AjaxyLiveSearch {
 			'label' => $this->get_style_setting('search_label', 'Search'),
 			'expand' => $this->get_style_setting('expand', false)
 		);
-		
+
 		$live_search_settings = json_encode(
 			array(
 				'expand' => $settings['expand']
 				,'searchUrl' => $this->get_style_setting('search_url',  home_url().'/?s=%s')
 				,'text' => $settings['label']
 				,'delay' => $this->get_style_setting('delay', 500)
-				,'iwidth' => $this->get_style_setting('width', 180) 
-				,'width' => $this->get_style_setting('results_width', 315) 
+				,'iwidth' => $this->get_style_setting('width', 180)
+				,'width' => $this->get_style_setting('results_width', 315)
 				,'ajaxUrl' => $this->get_ajax_url()
 				,'rtl' => $this->get_style_setting('rtl_theme', 0)
 			)
@@ -1168,7 +1168,7 @@ class AjaxyLiveSearch {
 							break;
 						default:
 							$m[] = $key.'="'.$value.'"';
-							
+
 					}
 				}
 			}
@@ -1190,7 +1190,7 @@ class AjaxyLiveSearch {
 			$arg_taxonomies = isset($_POST['taxonomies']) && trim($_POST['taxonomies']) != "" ? explode(',', trim($_POST['taxonomies'])) : array();
 			// override post_types from input
 			$arg_post_types = isset($_POST['post_types']) && trim($_POST['post_types']) != "" ? explode(',', trim($_POST['post_types'])) : array();
-			
+
 			$search = $this->get_search_objects(false, false, $arg_post_types, $arg_taxonomies);
 			$author_searched = false;
 			$authors = array();
@@ -1257,7 +1257,7 @@ class AjaxyLiveSearch {
 		if ($handle = opendir($themeDir)) {
 		  while (($file = readdir($handle)) !== false) {
 			if('dir' == filetype($themeDir.$file) ){
-				if(trim($file) != '.' && trim($file) != '..'){ 
+				if(trim($file) != '.' && trim($file) != '..'){
 					$dirs[] = $file;
 				}
 			}
@@ -1270,7 +1270,7 @@ class AjaxyLiveSearch {
 				if(file_exists($themeDir.$dir.'/style.css')){
 					$themes[$dir] = array(
 								'title' => $dir,
-								'stylesheet_dir' => $themeDir.$dir.'/style.css', 
+								'stylesheet_dir' => $themeDir.$dir.'/style.css',
 								'stylesheet_url' => plugins_url( $themeFolder.'/'.$dir.'/style.css', __FILE__),
 								'dir' => $themeDir.$dir,
 								'url' => plugins_url( $themeFolder.'/'.$dir , __FILE__ )
@@ -1315,7 +1315,7 @@ class AjaxyLiveSearch {
 			$form = $form.'<a style="display:none" href="http://www.ajaxy.org">Powered by Ajaxy</a>';
 		}
 		return $form;
-	}	
+	}
 	function selective_input($settings)
 	{
 		$selective_input = '
@@ -1347,15 +1347,15 @@ class AjaxyLiveSearch {
 		}
 		$settings = shortcode_atts( $settings, $atts, 'ajaxy-live-search-layout' ) ;
 		$form = $this->form($settings);
-		
-		
+
+
 		$live_search_settings = array(
 			'expand' => $settings['expand']
 			,'searchUrl' => $this->get_style_setting('search_url',  home_url().'/?s=%s')
 			,'text' => $settings['label']
 			,'delay' => $this->get_style_setting('delay', 500)
-			,'iwidth' => $this->get_style_setting('width', 180) 
-			,'width' => $this->get_style_setting('results_width', 315) 
+			,'iwidth' => $this->get_style_setting('width', 180)
+			,'width' => $this->get_style_setting('results_width', 315)
 			,'ajaxUrl' => $this->get_ajax_url()
 			,'ajaxData' => 'sf_custom_data_'.$m
 			,'search' => false
@@ -1363,23 +1363,23 @@ class AjaxyLiveSearch {
 		);
 
 		$live_search_settings = shortcode_atts( $live_search_settings, $atts, 'ajaxy-live-search' ) ;
-		
+
 		$script = '
 		<script type="text/javascript">
 			/* <![CDATA[ */
-				function sf_custom_data_'.$m.'(data){ 
+				function sf_custom_data_'.$m.'(data){
 					data.show_category = "'.$settings['show_category'].'";
 					data.show_post_category = "'.$settings['show_post_category'].'";
 					data.post_types = "'.$settings['post_types'].'";
 					return data;
 				}
 				jQuery(document).ready(function(){
-					jQuery("#'.$m.' .sf_input").ajaxyLiveSearch('.json_encode($live_search_settings).');					
+					jQuery("#'.$m.' .sf_input").ajaxyLiveSearch('.json_encode($live_search_settings).');
 				});
 			/* ]]> */
 		</script>';
 		return $form.$script;
-	}	
+	}
 	function selective_input_shortcode($atts = array()) {
 		$m = uniqid();
 		$scat = (array)$this->get_setting('category');
@@ -1410,8 +1410,8 @@ class AjaxyLiveSearch {
 			,'searchUrl' => $this->get_style_setting('search_url',  home_url().'/?s=%s')
 			,'text' => $settings['label']
 			,'delay' => $this->get_style_setting('delay', 500)
-			,'iwidth' => $this->get_style_setting('width', 180) 
-			,'width' => $this->get_style_setting('results_width', 315) 
+			,'iwidth' => $this->get_style_setting('width', 180)
+			,'width' => $this->get_style_setting('results_width', 315)
 			,'ajaxUrl' => $this->get_ajax_url()
 			,'ajaxData' => 'sf_custom_data_'.$m
 			,'callback' => 'sf_load_data_'.$m
@@ -1420,16 +1420,16 @@ class AjaxyLiveSearch {
 		);
 
 		$live_search_settings = shortcode_atts( $live_search_settings, $atts, 'ajaxy-live-search' ) ;
-		
+
 		$script = '
 		<script type="text/javascript">
 			/* <![CDATA[ */
-				function sf_custom_data_'.$m.'(data){ 
+				function sf_custom_data_'.$m.'(data){
 					data.show_category = "'.$settings['show_category'].'";
 					data.show_post_category = "'.$settings['show_post_category'].'";
 					data.post_types = "'.$settings['post_types'].'";
 					return data;
-				}function sf_load_data_'.$m.'(object, item){ 
+				}function sf_load_data_'.$m.'(object, item){
 					var data = jQuery("body").data("sf_results");
 					var rType = jQuery(item).attr("result-type");
 					var name_type = "'.$settings['name-type'].'";
@@ -1439,20 +1439,20 @@ class AjaxyLiveSearch {
 						var iArray = jQuery(item).attr("index-array");
 						var index = jQuery(item).attr("index");
 						var itemObject = data[iType][iArray];
-						for (var key in itemObject.all[index]) {	
+						for (var key in itemObject.all[index]) {
 							var reg = new RegExp("{"+key+"}","gi");
 							name_value = name_value.replace(reg, itemObject.all[index][key]);
 						}
-						sf_addItem(jQuery(object.element).parent(), itemObject.all[index].post_title, "'.$settings['name'].($settings['name-type'] == 'array' ? '[]':'').'", name_type, name_value); 
+						sf_addItem(jQuery(object.element).parent(), itemObject.all[index].post_title, "'.$settings['name'].($settings['name-type'] == 'array' ? '[]':'').'", name_type, name_value);
 					}else if(rType == "array") {
 						var index = jQuery(item).attr("index");
 						var itemObject = data[index];
-						sf_addItem(jQuery(object.element).parent(), itemObject, "'.$settings['name'].($settings['name-type'] == 'array' ? '[]':'').'", name_type, itemObject); 
+						sf_addItem(jQuery(object.element).parent(), itemObject, "'.$settings['name'].($settings['name-type'] == 'array' ? '[]':'').'", name_type, itemObject);
 					}
-					
+
 				}
 				jQuery(document).ready(function(){
-					jQuery("#'.$m.' .sf_ajaxy-selective-input").ajaxyLiveSearch('.json_encode($live_search_settings).');					
+					jQuery("#'.$m.' .sf_ajaxy-selective-input").ajaxyLiveSearch('.json_encode($live_search_settings).');
 				});
 			/* ]]> */
 		</script>';
